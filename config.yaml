@@ -1,0 +1,23 @@
+pipeline_version: "1.0.0"
+mlflow:
+  training_experiment: "telco-churn-training"
+  execution_experiment: "pipeline-executions"
+  registered_model_name: "telco-churn-classifier"
+  champion_alias: "champion"
+data:
+  split: {train: 0.6, validation: 0.2, test: 0.2}
+  random_state: 42
+validation:
+  drift_alpha: 0.01
+  numeric_min_ks_statistic: 0.1
+  categorical_min_tvd: 0.05
+  min_drifted_features: 1
+model:
+  params: {n_estimators: 300, max_depth: null, min_samples_leaf: 1, class_weight: "balanced", random_state: 42, n_jobs: -1}
+model_validation:
+  primary_metric: "f1"
+  min_improvement: 0.0
+serving:
+  drift_window_size: 500
+  drift_min_samples: 100
+  drift_refresh_seconds: 15

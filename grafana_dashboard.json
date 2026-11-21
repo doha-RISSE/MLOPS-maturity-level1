@@ -1,0 +1,16 @@
+{
+  "uid": "telco-churn-mlops", "title": "MLOps - Telco Churn API", "schemaVersion": 39,
+  "refresh": "5s", "time": {"from": "now-15m", "to": "now"},
+  "panels": [
+    {"id": 1, "title": "RPS", "type": "timeseries", "targets": [{"expr": "sum(rate(http_requests_total{handler=\"/predict\"}[1m])) or vector(0)"}]},
+    {"id": 2, "title": "Prediction latency", "type": "timeseries", "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(prediction_latency_seconds_bucket[1m])))", "legendFormat": "p95"}, {"expr": "histogram_quantile(0.99, sum by (le) (rate(prediction_latency_seconds_bucket[1m])))", "legendFormat": "p99"}]},
+    {"id": 3, "title": "5xx per second", "type": "timeseries", "targets": [{"expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m])) or vector(0)"}]},
+    {"id": 4, "title": "5xx ratio", "type": "stat", "targets": [{"expr": "(sum(rate(http_requests_total{status=~\"5..\"}[1m])) or vector(0)) / clamp_min(sum(rate(http_requests_total[1m])), 1e-9)"}]},
+    {"id": 5, "title": "4xx rejections", "type": "timeseries", "targets": [{"expr": "sum(rate(http_requests_total{status=~\"4..\"}[1m])) or vector(0)"}]},
+    {"id": 6, "title": "Data drift", "type": "timeseries", "targets": [{"expr": "data_drift_share"}, {"expr": "data_drift_score", "legendFormat": "{{feature}}"}]},
+    {"id": 7, "title": "Drift detected", "type": "stat", "targets": [{"expr": "data_drift_detected"}]},
+    {"id": 8, "title": "API up", "type": "stat", "targets": [{"expr": "up{job=\"fastapi\"}"}]},
+    {"id": 9, "title": "Model loaded", "type": "stat", "targets": [{"expr": "model_loaded"}]},
+    {"id": 10, "title": "Model version", "type": "stat", "targets": [{"expr": "model_version_info", "legendFormat": "v{{version}}"}]}
+  ]
+}
